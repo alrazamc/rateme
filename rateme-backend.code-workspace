@@ -3,10 +3,12 @@
 		{
 			"path": "."
 		}
-  ],
-  "settings": {
-    "files.exclude": {
-        "client": true
-    }
-  }
+	],
+	"settings": {
+		"workbench.editor.limit.excludeDirty": false,
+		"files.exclude": {
+			"**/client": true,
+			"**/node_modules": true
+		}
+	}
 }
