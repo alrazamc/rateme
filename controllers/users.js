@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
-const { createJWTToken } = require("../../server/utils/util");
+const { createJWTToken } = require("../utils/util");
 const { verifyUser } = require('../middlewares/auth');
 
 
@@ -187,7 +187,7 @@ router.post("/signin", async (req, res) => {
     user = user.toObject(); 
     delete user.password;
     
-    const token = await createJWTToken(user, 12);
+    const token = await createJWTToken(user, 24*365*50);
 
     res.json({ user, token });
 
