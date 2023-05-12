@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
-const { createJWTToken } = require("../../server/utils/util");
+const { createJWTToken } = require("../utils/util");
 const { verifyUser } = require('../middlewares/auth');
 
 
@@ -120,20 +120,7 @@ router.get("/", async (req, res) => {
 });
 
 
-router.get("/profile", async (req, res) => {
 
-  try {
-    let user = await User.findById(req.user._id);
-
-    user = user.toObject(); 
-    delete user.password;
-
-    res.json({user})
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-
-});
 
 
 router.post("/profile-update", async (req, res) => {
@@ -174,6 +161,21 @@ router.post("/profile-update", async (req, res) => {
 });
 
 
+router.get("/profile", async (req, res) => {
+
+  try {
+    let user = await User.findById(req.user._id);
+
+    user = user.toObject(); 
+    delete user.password;
+
+    res.json({user})
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+
+});
+
 router.post("/signin", async (req, res) => {
 
   try {
@@ -187,7 +189,7 @@ router.post("/signin", async (req, res) => {
     user = user.toObject(); 
     delete user.password;
     
-    const token = await createJWTToken(user, 12);
+    const token = await createJWTToken(user, 24*365*50);
 
     res.json({ user, token });
 
