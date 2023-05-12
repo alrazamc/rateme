@@ -120,20 +120,7 @@ router.get("/", async (req, res) => {
 });
 
 
-router.get("/profile", async (req, res) => {
 
-  try {
-    let user = await User.findById(req.user._id);
-
-    user = user.toObject(); 
-    delete user.password;
-
-    res.json({user})
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-
-});
 
 
 router.post("/profile-update", async (req, res) => {
@@ -173,6 +160,21 @@ router.post("/profile-update", async (req, res) => {
   }
 });
 
+
+router.get("/profile", async (req, res) => {
+
+  try {
+    let user = await User.findById(req.user._id);
+
+    user = user.toObject(); 
+    delete user.password;
+
+    res.json({user})
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+
+});
 
 router.post("/signin", async (req, res) => {
 
