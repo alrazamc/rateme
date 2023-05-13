@@ -1,26 +1,34 @@
 import { Button } from "@mui/material";
-import { useDispatch } from "react-redux";
 import { hideProgressBar, showProgressBar } from "./store/actions/progressBarActions";
 import ProgressBar from "./components/library/ProgressBar";
 import AppPublic from "./AppPublic";
 import { useEffect } from "react";
-import { loadAuth, loadToken } from "./store/actions/authActions";
+import { loadAuth, signout} from "./store/actions/authActions";
+import { connect } from 'react-redux';
+import AppPreloader from "./components/library/AppPreloader";
 
-function App() {
-  const dispatch = useDispatch();
+function App({ user, isAuthLoaded, loadAuth, signout }) {
   useEffect(() => {
-    dispatch( loadToken() );
-    dispatch( loadAuth() );
+    loadAuth();
   }, []);
 
-  return <AppPublic />
+  if(!isAuthLoaded) return <AppPreloader message="Loading App...." />
+
+  if(!user)
+    return <AppPublic />
   return (
     <div className="App">
-      <Button onClick={() => dispatch( showProgressBar() ) }>Show Progress Bar</Button>
-      <Button onClick={() => dispatch( hideProgressBar() ) }>Hide Progress Bar</Button>
-      <ProgressBar />
+      You are signed in
+      <Button onClick={signout}>Logout</Button>
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    user: state.auth.user,
+    isAuthLoaded: state.auth.isLoaded
+  }
+}
+
+export default connect(mapStateToProps, { loadAuth, signout })(App);
