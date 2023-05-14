@@ -1,15 +1,25 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { Field, Form } from "react-final-form";
 import TextInput from "../library/form/TextInput";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { showError } from "../../store/actions/alertActions";
+import { useDispatch } from "react-redux";
 
 function ForgotPassword(){
+  const dispatch = useDispatch();
   return(
     <Box borderRadius="5px" boxShadow="0px 0px 17px 5px #dbdada"  p={3} bgcolor="#fff" textAlign="center" minWidth="350px">
       <h3>Rate Me</h3>
       <Form
         onSubmit={(data) => {
-          console.log('submitting', data);
+          return axios.post('/users/forgot-password', data).then(({ data }) => {
+          
+            
+          }).catch(err => {
+            let message = err && err.response && err.response.data ? err.response.data.error : err.message;
+            dispatch( showError(message) ); 
+          })
         }}
         validate={(data) => {
           const errors = {};
@@ -23,10 +33,11 @@ function ForgotPassword(){
       >
         {
           (props) => {
+            const { submitting, invalid } = props;
             return (
               <form onSubmit={props.handleSubmit}>
-                <Field name="email" type="email" component={TextInput} placeholder="Enter email address..." label="Email" />
-                <Button type="submit" variant="outlined">Reset Password</Button>
+                <Field name="email" type="email" component={TextInput} placeholder="Enter email address..." label="Email" autoFocus />
+                <Button type="submit" variant="outlined" disabled={submitting || invalid}>Reset Password { submitting && <CircularProgress style={{ marginLeft: '10px'}} size={20} /> } </Button>
                 <Box mt={2}>
                   <Link style={{textDecoration: 'none'}} to="/admin/signin">Sign in</Link>
                 </Box>
