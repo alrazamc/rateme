@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import AppPreloader from "./components/library/AppPreloader";
 import { Navigate, useLocation } from "react-router-dom";
 
-const publicRoutes = ['/', '/admin/signin', '/admin/forgot-password', '/admin/reset-password/:resetCode']
+const publicRoutes = ['/admin/signin', '/admin/forgot-password', '/admin/reset-password/']
 
 function App({ user, isAuthLoaded, loadAuth, signout }) {
   const location = useLocation();
@@ -18,9 +18,11 @@ function App({ user, isAuthLoaded, loadAuth, signout }) {
 
   if(!isAuthLoaded) return <AppPreloader message="Loading App...." />
 
-  if(user && publicRoutes.includes(location.pathname))
+  if(user && publicRoutes.find(url => location.pathname.startsWith(url)) )
     return <Navigate to="/admin/dasboard" />
-  if(!user && !publicRoutes.includes(location.pathname))
+  if(!user && !publicRoutes.find(url => location.pathname.startsWith(url)) )
+    return <Navigate to="/admin/signin" />
+  if(location.pathname === '/' || location.pathname === '/admin')
     return <Navigate to="/admin/signin" />
 
   if(!user)
