@@ -127,36 +127,30 @@ router.get("/", async (req, res) => {
 
 
 router.post("/profile-update", async (req, res) => {
-  const userExist = await User.findOne({ email: req.body.email, _id: { $ne: req.user._id } });
   try {
-    if (userExist) throw new Error("This email is already registered");
+    if(!req.body.name) throw new Error("Name is required");
 
-    const {
-      name,
-      email,
-      phoneNumber,
-      profilePicture,
-      password,
-      type,
-      active,
-      createdOn,
-      modifiedOn
-    } = req.body;
+    const record = {
+      name: req.body.name,
+      phoneNumber: req.body.phoneNumber,
+      modifiedOn: new Date()
+    }
+    if(req.body.newPassword)
+    {
+      if(!req.body.currentPassword) throw new Error('Current password is required');
+      if (!(await bcrypt.compare(req.body.currentPassword, req.user.password)))
+        throw new Error("Current password is incorrect");
+      if(req.body.newPassword.length < 6) throw new Error("New password should have at least 6 characters");
+      if(req.body.newPassword !== req.body.confirmPassword) throw new Error("Passwords are not same");
+      record.password = await bcrypt.hash(req.body.newPassword, 10)
+    }
 
 
-    let updatedUser = await User.findByIdAndUpdate(req.user._id, {
-      name: name,
-      email,
-      phoneNumber,
-      profilePicture,
-      password: await bcrypt.hash(req.body.password, 10),
-      type,
-      active,
-      modifiedOn
-    })
-    updatedUser = updatedUser.toObject(); 
-    delete updatedUser.password;
-    res.json({ user: updatedUser });
+    await User.findByIdAndUpdate(req.user._id, record);
+    let user = await User.findById(req.user._id);
+    user = user.toObject(); 
+    delete user.password;
+    res.json({ user });
 
   } catch (error) {
     res.status(400).json({ error: error.message });

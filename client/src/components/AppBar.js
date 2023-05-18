@@ -21,13 +21,13 @@ function AppBar(){
 
   return(
     <MuiAppBar>
-      <Container maxWidth="xl">
+      <Container maxWidth="lg">
         <Toolbar>
           <AdbIcon sx={{display: 'flex', mr: 1}} />
           <Typography
             variant="h6"
             component={Link}
-            to="/admin/dasboard"
+            to="/admin/dashboard"
             sx={{
               mr: 2,
               display: 'flex',
