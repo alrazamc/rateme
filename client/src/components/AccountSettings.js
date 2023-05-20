@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress } from "@mui/material";
+import { Box, Button, CircularProgress, TextField } from "@mui/material";
 import { Field, Form } from "react-final-form";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -6,24 +6,18 @@ import { connect, useDispatch } from "react-redux";
 import { showError, showSuccess } from "../store/actions/alertActions";
 import TextInput from "./library/form/TextInput";
 import { hideProgressBar, showProgressBar } from "../store/actions/progressBarActions";
+import FileInput from "./library/form/FileInput";
 
 function AccountSettings({ user, loading }) {
   const dispatch = useDispatch();
   return (
-    <Box
-      borderRadius="5px"
-      boxShadow="0px 0px 17px 5px #dbdada"
-      p={3}
-      bgcolor="#fff"
-      textAlign="center"
-      minWidth="350px"
-    >
+    <Box textAlign="center" sx={ {width: { sm: "100%", md: "50%" }, mx: 'auto'}}>
       <h3>Account Settings</h3>
       <Form
         onSubmit={(data) => {
           dispatch( showProgressBar() );
           return axios
-            .post("/users/profile-update", data)
+            .postForm("/users/profile-update", data)
             .then(({ data }) => {
               if(data.user)
               {
@@ -88,6 +82,14 @@ function AccountSettings({ user, loading }) {
                 type="text"
                 component={TextInput}
                 placeholder="Enter phone number"
+              />
+              
+              <Field
+                name="profilePicture"
+                component={FileInput}
+                inputProps={{
+                  accept: "image/*"
+                }}
               />
               <Field
                 name="currentPassword"
