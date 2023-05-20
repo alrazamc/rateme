@@ -11,6 +11,7 @@ import AppBar from "./components/AppBar";
 import AccountSettings from "./components/AccountSettings";
 import Dashboard from "./components/Dashboard";
 import Alert from "./components/library/Alert";
+import BlockInterface from "./components/library/BlockInterface";
 
 const publicRoutes = ['/admin/signin', '/admin/forgot-password', '/admin/reset-password/']
 
@@ -35,7 +36,8 @@ function App({ user, isAuthLoaded, loadAuth, signout }) {
     <div className="App">
       <AppBar />
       <Alert />
-      <Container sx={{ mt: 10 }} maxWidth="lg">
+      <Container  sx={{ mt: 10, p:3, position: 'relative', backgroundColor: '#fff', borderRadius:"5px", boxShadow: "0px 0px 17px 5px #dbdada" }} maxWidth="lg">
+        <BlockInterface />
         <Routes>
           <Route path="/admin/account-settings" Component={AccountSettings} />
           <Route path="/admin/dashboard" Component={Dashboard} />
