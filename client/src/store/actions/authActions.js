@@ -7,7 +7,10 @@ export const authActions = {
   AUTH_LOADED: 'authLoaded',
   AUTH_FAILED: 'authFailed',
   LOAD_TOKEN: 'loadToken',
+  UPDATE_USER: 'updateUser'
 }
+
+export const updateUser = (user) => ({ type: authActions.UPDATE_USER, user });
 
 export const signin = (user, token) => ({ type: authActions.SIGN_IN, user, token, })
 
@@ -25,7 +28,7 @@ export const loadAuth = () => {
       type: authActions.LOAD_TOKEN,
       token: token ? token : null
     })
-    axios.get('/users/profile').then(({ data }) => {
+    axios.get('api/users/profile').then(({ data }) => {
       dispatch({
         type: authActions.AUTH_LOADED,
         user: data.user
