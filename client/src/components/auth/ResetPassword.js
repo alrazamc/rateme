@@ -12,7 +12,7 @@ function ResetPassword(){
   const dispatch = useDispatch();
   const navigator = useNavigate();
   useEffect(() => {
-    axios.post('/users/verify-reset-code', { code: resetCode }).then(result => {
+    axios.post('api/users/verify-reset-code', { code: resetCode }).then(result => {
 
     }).catch(err => {
       dispatch( showError('invalid request') );
@@ -24,7 +24,7 @@ function ResetPassword(){
       <h3>Rate Me</h3>
       <Form
         onSubmit={(data) => {
-          return axios.post('/users/reset-password', { ...data, code: resetCode}).then(({ data }) => {
+          return axios.post('api/users/reset-password', { ...data, code: resetCode}).then(({ data }) => {
             if(data.success)
             {
               dispatch( showSuccess('Password changed successfully. Please signin with new password') );
