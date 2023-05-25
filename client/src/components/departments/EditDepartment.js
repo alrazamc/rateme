@@ -5,9 +5,9 @@ import TextInput from "../library/form/TextInput";
 import { hideProgressBar, showProgressBar } from "../../store/actions/progressBarActions";
 import FileInput from "../library/form/FileInput";
 import { showError, showSuccess } from "../../store/actions/alertActions";
-import { addDepartment } from "../../store/actions/departmentActions";
+import { addDepartment, updateDepartment } from "../../store/actions/departmentActions";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 
 function EditDepartment() {
@@ -15,10 +15,13 @@ function EditDepartment() {
 
   const dispatch = useDispatch();
   const { deptId } = useParams();
+  const navigator = useNavigate();
 
   const department = useSelector(state => state.departments.records.find(item => item._id === deptId));
-    console.log(department)
-
+  if(!department)
+  {
+    return <Navigate to="/admin/departments" />
+  }
 
   const validate = (data) => {
     const errors = {};
@@ -35,10 +38,11 @@ function EditDepartment() {
   const handelDepartment = async (data, form) => {
     try {
       dispatch(showProgressBar())
-      let result = await axios.postForm("api/departments/add", data);
+      let result = await axios.postForm("api/departments/edit", {...data, id: deptId});
       if (result.data.department) {
-        dispatch(addDepartment(result.data.department));
-        dispatch(showSuccess('Department added successfully'))
+        dispatch(updateDepartment(result.data.department));
+        dispatch(showSuccess('Department updated successfully'))
+        navigator('/admin/departments');
       }
       dispatch(hideProgressBar())
 
@@ -52,11 +56,16 @@ function EditDepartment() {
 
   return (
     <Box textAlign={'center'} sx={{ width: { sm: "50%", md: "50%" }, mx: "auto" }}>
-      <h3>Add Department</h3>
+      <h3>Update Department</h3>
       <Form
         onSubmit={handelDepartment}
         validate={validate}
-        initialValues={{}}
+        initialValues={{
+          name: department.name,
+          email: department.email,
+          phone: department.phone,
+          address: department.address
+        }}
         render={({
           handleSubmit,
           submitting,
@@ -74,7 +83,7 @@ function EditDepartment() {
               variant="outlined"
               type="submit"
               disabled={invalid || submitting}
-            >Add Department</Button>
+            >Update Department</Button>
           </form>
         )}
       />
