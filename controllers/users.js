@@ -11,39 +11,31 @@ const ejs = require('ejs');
 const multer = require('multer');
 const fs = require('fs').promises;
 const path = require('path');
-
-
+const { userTypes } = require("../utils/util");
 
 router.use(['/', '/add', '/edit', '/delete', '/profile', '/profile-update'], verifyUser);
 
 
 router.post("/add", async (req, res) => {
-  const userExist = await User.findOne({ email: req.body.email });
   try {
+    //only super admin can add user
+    if (req.user.type !== userTypes.USER_TYPE_SUPER)
+      throw new Error("Invalid Request");
+
+    const userExist = await User.findOne({ email: req.body.email });
     if (userExist) throw new Error("This email is already registered");
 
-    const {
-      name,
-      email,
-      phoneNumber,
-      profilePicture,
-      password,
-      type,
-      createdOn,
-      modifiedOn
-    } = req.body;
+    const record = {
+      name: req.body.name,
+      email: req.body.email,
+      phoneNumber: req.body.phoneNumber,
+      password: await bcrypt.hash(req.body.password, 10),
+      type: req.body.type,
+      departmentId: req.body.departmentId,
+      createdOn: new Date()
+    }
 
-
-    const user = new User({
-      name: name,
-      email,
-      phoneNumber,
-      profilePicture,
-      password: await bcrypt.hash(password, 10),
-      type,
-      createdOn,
-      modifiedOn
-    })
+    const user = new User(record)
 
     await user.save();
     res.json({ user });
@@ -54,41 +46,39 @@ router.post("/add", async (req, res) => {
 });
 
 router.post("/edit", async (req, res) => {
-  const userExist = await User.findOne({ email: req.body.email, _id: { $ne: req.body.id } });
   try {
+
+    //only super admin can edit user
+    if (req.user.type !== userTypes.USER_TYPE_SUPER)
+    throw new Error("Invalid Request");
+
+    const userExist = await User.findOne({ email: req.body.email, _id: { $ne: req.body.id } });
     if (userExist) throw new Error("This email is already registered");
 
     if (!req.body.id) throw new Error("User id is required");
     if (!mongoose.isValidObjectId(req.body.id))
       throw new Error("User id is invalid");
-    if (req.user._id.toString() !== req.body.id) // to string is used to convert req.user._id to string because this returns new ObjectId("6439f4ca31d7babed61963e0") that is object user id and we need only string to compare it.
-      throw new Error("Invalid request s");
 
     const user = await User.findById(req.body.id);
     if (!user) throw new Error("User does not exists");
 
 
-    const {
-      name,
-      email,
-      phoneNumber,
-      profilePicture,
-      password,
-      type,
-      createdOn,
-      modifiedOn
-    } = req.body;
+    const record = {
+      name: req.body.name,
+      email: req.body.email,
+      phoneNumber: req.body.phoneNumber,
+      type: req.body.type,
+      departmentId: req.body.departmentId,
+      modifiedOn: new Date()
+    }
 
+    if(req.body.password)
+      record.password = await bcrypt.hash(req.body.password, 10);
 
-    let updatedUser = await User.findByIdAndUpdate(req.body.id, {
-      name: name,
-      email,
-      phoneNumber,
-      profilePicture,
-      password: await bcrypt.hash(req.body.password, 10),
-      type,
-      modifiedOn
-    })
+    await User.findByIdAndUpdate(req.body.id, record)
+
+    let updatedUser = await User.findById(req.body.id);
+    delete updatedUser.password;
 
     res.json({ user: updatedUser });
 

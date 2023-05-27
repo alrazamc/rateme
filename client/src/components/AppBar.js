@@ -49,6 +49,7 @@ function AppBar(){
                 >
                 Departments
               </Button>
+              <Button LinkComponent={Link} to="/admin/users" sx={{ color: 'white' }}>Users</Button>
           </Box>
 
           <Box>
