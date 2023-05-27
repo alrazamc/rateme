@@ -5,7 +5,7 @@ import TextInput from "../library/form/TextInput";
 import { hideProgressBar, showProgressBar } from "../../store/actions/progressBarActions";
 import FileInput from "../library/form/FileInput";
 import { showError, showSuccess } from "../../store/actions/alertActions";
-import { addDepartment, updateDepartment } from "../../store/actions/departmentActions";
+import { updateDepartment } from "../../store/actions/departmentActions";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 
