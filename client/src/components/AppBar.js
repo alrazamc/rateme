@@ -5,9 +5,11 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { signout } from '../store/actions/authActions';
 import ProgressBar from './library/ProgressBar';
+import { userTypes } from '../utils/constants';
 function AppBar(){
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
+  const userType = user.type;
   const [anchorEl, setAnchorEl] = useState(null);
   const openMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -42,13 +44,26 @@ function AppBar(){
             RateMe
           </Typography>
           <Box textAlign="right" flexGrow={1}>
-              <Button 
-                component={Link}
-                to="/admin/departments"
-                sx={{ color: '#fff', my:2 }}
-                >
-                Departments
-              </Button>
+              {
+                userType === userTypes.USER_TYPE_SUPER && 
+                <Button 
+                  component={Link}
+                  to="/admin/departments"
+                  sx={{ color: '#fff', my:2 }}
+                  >
+                  Departments
+                </Button>
+              }
+              {
+                userType === userTypes.USER_TYPE_STANDARD && 
+                <Button 
+                  component={Link}
+                  to={ `/admin/employees/${user.departmentId}` }
+                  sx={{ color: '#fff', my:2 }}
+                  >
+                  Employees
+                </Button>
+              }
               <Button LinkComponent={Link} to="/admin/users" sx={{ color: 'white' }}>Users</Button>
           </Box>
 

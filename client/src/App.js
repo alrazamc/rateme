@@ -1,9 +1,7 @@
-import { Box, Button, Container } from "@mui/material";
-import { hideProgressBar, showProgressBar } from "./store/actions/progressBarActions";
-import ProgressBar from "./components/library/ProgressBar";
+import { Container } from "@mui/material";
 import AppPublic from "./AppPublic";
 import { useEffect } from "react";
-import { loadAuth, signout} from "./store/actions/authActions";
+import { loadAuth } from "./store/actions/authActions";
 import { connect } from 'react-redux';
 import AppPreloader from "./components/library/AppPreloader";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
@@ -19,10 +17,11 @@ import Departments from "./components/departments/Departments";
 import AddUser from "./components/users/AddUser";
 import Users from "./components/users/Users";
 import EditUser from "./components/users/EditUser";
+import { userTypes } from "./utils/constants";
 
 const publicRoutes = ['/admin/signin', '/admin/forgot-password', '/admin/reset-password/']
 
-function App({ user, isAuthLoaded, loadAuth, signout }) {
+function App({ user, isAuthLoaded, loadAuth, userType }) {
   const location = useLocation();
   useEffect(() => {
     loadAuth();
@@ -50,8 +49,14 @@ function App({ user, isAuthLoaded, loadAuth, signout }) {
           <Route path="/admin/dashboard" Component={Dashboard} />
           
           {/* Departments routes */}
-          <Route path="/admin/departments" Component={Departments} />
-          <Route path="/admin/departments/add" Component={AddDepartment} />
+          { 
+            userType === userTypes.USER_TYPE_SUPER &&  
+            <>
+              <Route path="/admin/departments" Component={Departments} />
+              <Route path="/admin/departments/add" Component={AddDepartment} />
+            </>
+          }
+          
           <Route path="/admin/departments/edit/:deptId" Component={EditDepartment} />
 
           {/* Users routes */}
@@ -67,8 +72,9 @@ function App({ user, isAuthLoaded, loadAuth, signout }) {
 const mapStateToProps = (state) => {
   return {
     user: state.auth.user,
+    userType: state.auth.userType,
     isAuthLoaded: state.auth.isLoaded
   }
 }
 
-export default connect(mapStateToProps, { loadAuth, signout })(App);
+export default connect(mapStateToProps, { loadAuth })(App);
