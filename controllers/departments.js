@@ -9,6 +9,7 @@ const { userTypes } = require("../utils/util");
 const multer = require('multer');
 const fs = require('fs').promises;
 const path = require('path');
+const { unlink } = require( "fs" );
 
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
@@ -115,7 +116,7 @@ router.post("/edit", upload.single("logo"), async (req, res) => {
 });
 
 
-router.delete("/delete", async (req, res) => {
+router.post("/delete", async (req, res) => {
   try {
     if (!req.body.id) throw new Error("Department id is required");
     if (!mongoose.isValidObjectId(req.body.id))
@@ -127,7 +128,8 @@ router.delete("/delete", async (req, res) => {
 
     const department = await Department.findById(req.body.id);
     if (!department) throw new Error("Department does not exists");
-
+    if(department.logo)
+      await fs.unlink(`content/departments/${department.logo}`);
     await Department.findByIdAndDelete(req.body.id);
 
     res.json({ success: true });

@@ -13,7 +13,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const { userTypes } = require("../utils/util");
 
-router.use(['/', '/add', '/edit', '/delete', '/profile', '/profile-update'], verifyUser);
+router.use(['/add', '/edit', '/delete', '/profile', '/profile-update'], verifyUser);
 
 
 router.post("/add", async (req, res) => {
