@@ -10,8 +10,9 @@ import SelectInput from "../library/form/SelectInput";
 import { loadDepartments } from "../../store/actions/departmentActions";
 import { useEffect } from "react";
 import { updateUser } from "../../store/actions/userActions";
+import { userTypes } from "../../utils/constants";
 
-function EditUser({ departments, loadDepartments }) {
+function EditUser() {
 
     const dispatch = useDispatch();
     const { userId } = useParams();
@@ -19,23 +20,13 @@ function EditUser({ departments, loadDepartments }) {
 
     const user = useSelector(state => state.users.records.find(item => item._id === userId));
 
-    useEffect(() => {
-        if (departments.length === 0)
-            loadDepartments()
-    }, []);
-
     if (!user)
         return <Navigate to="/admin/users" />
-
-   
 
     const validate = (data) => {
         const errors = {};
 
         if (!data.name) errors.name = "Name is required";
-        if (!data.email) errors.email = "Email is required";
-        else if (!/^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/.test(data.email))
-            errors.email = "Invalid email address";
 
         if (!data.phoneNumber) errors.phoneNumber = "Please enter phone number";
 
@@ -44,11 +35,6 @@ function EditUser({ departments, loadDepartments }) {
             if (data.password.length < 6)
             errors.password = "Password should have at least 6 characters";
         }
-
-        if (!data.type)
-            errors.type = "User type is required";
-        if (!data.departmentId)
-            errors.departmentId = "User type is required";
 
         return errors
     };
@@ -82,9 +68,7 @@ function EditUser({ departments, loadDepartments }) {
                 initialValues={{
                     name: user.name,
                     email: user.email,
-                    phoneNumber: user.phoneNumber,
-                    type: user.type,
-                    departmentId: user.departmentId,
+                    phoneNumber: user.phoneNumber
                 }}
                 render={({
                     handleSubmit,
@@ -92,18 +76,10 @@ function EditUser({ departments, loadDepartments }) {
                     invalid,
                 }) => (
                     <form onSubmit={handleSubmit} method="post" encType="multipart/form-data">
-                        <Field component={TextInput} type='text' name="name" placeholder="Enter name" />
-                        <Field component={TextInput} type='email' name="email" placeholder="Enter email address" />
-                        <Field component={TextInput} type='text' name="phoneNumber" placeholder="Enter phone number" />
-                        <Field component={TextInput} type='password' name="password" placeholder="Enter current passowrd" />
-                        <Field component={SelectInput} name="type" options={[{ label: "Select user type", value: ' ' }, { label: "Super Admin", value: 1 }, { label: "Standard", value: 2 }]} />
-                        <Field
-                            component={SelectInput}
-                            value={user.departmentId}
-                            name="departmentId"
-                            options={
-                                departments && departments.map(department => ({ label: department.name, value: department._id }))
-                            } />
+                        <Field component={TextInput} type='text' name="name" placeholder="Name..." autoFocus />
+                        <Field component={TextInput} type='email' name="email" placeholder="Email address..." disabled />
+                        <Field component={TextInput} type='text' name="phoneNumber" placeholder="Phone number..." />
+                        <Field component={TextInput} type='password' name="password" placeholder="Password..." />
 
                         <Button
                             sx={{ marginTop: '20px' }}
@@ -118,10 +94,4 @@ function EditUser({ departments, loadDepartments }) {
     );
 }
 
-const mapStateToProps = ({ departments }) => {
-    return {
-        departments: departments.records
-    }
-}
-
-export default connect(mapStateToProps, { loadDepartments })(EditUser);
+export default EditUser;
