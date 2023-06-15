@@ -21,6 +21,8 @@ import { userTypes } from "./utils/constants";
 import Employees from "./components/employees/Employees";
 import AddEmployee from "./components/employees/AddEmployee";
 import EditEmployee from "./components/employees/EditEmployee";
+import EmployeeProfile from "./components/employees/EmployeeProfile";
+import Home from "./components/feedback/Home";
 
 const publicRoutes = ['/admin/signin', '/admin/forgot-password', '/admin/reset-password/']
 
@@ -32,15 +34,21 @@ function App({ user, isAuthLoaded, loadAuth, userType }) {
 
   if(!isAuthLoaded) return <AppPreloader message="Loading App...." />
 
-  if(user && publicRoutes.find(url => location.pathname.startsWith(url)) )
-    return <Navigate to="/admin/dashboard" />
-  if(!user && !publicRoutes.find(url => location.pathname.startsWith(url)) )
-    return <Navigate to="/admin/signin" />
-  if(location.pathname === '/' || location.pathname === '/admin')
-    return <Navigate to="/admin/signin" />
+  if(user)
+  {
+    if(publicRoutes.find(url => location.pathname.startsWith(url)))
+      return <Navigate to="/admin/dashboard" />
+    if(location.pathname === '/' || location.pathname.startsWith('/employee/feedback'))
+      return <Navigate to="/admin/dashboard" />
+  }else
+  {
+    if(!publicRoutes.find(url => location.pathname.startsWith(url)) && location.pathname !== '/' && !location.pathname.startsWith('/employee/feedback'))
+      return <Navigate to="/" />
+  }
 
   if(!user)
     return <AppPublic />
+  
   return (
     <div className="App">
       <AppBar />
@@ -70,6 +78,8 @@ function App({ user, isAuthLoaded, loadAuth, userType }) {
           <Route path="/admin/employees/:deptId" Component={Employees} />
           <Route path="/admin/employees/add/:deptId" Component={AddEmployee} />
           <Route path="/admin/employees/edit/:employeeId" Component={EditEmployee} />
+          <Route path="/admin/employees/profile/:employeeId" Component={EmployeeProfile} />
+          
         </Routes>
       </Container>
     </div>
