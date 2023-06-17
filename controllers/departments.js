@@ -10,6 +10,8 @@ const multer = require('multer');
 const fs = require('fs').promises;
 const path = require('path');
 const { unlink } = require( "fs" );
+const Rating = require( "../models/Rating" );
+const Employee = require( "../models/Employee" );
 
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
@@ -133,6 +135,11 @@ router.post("/delete", async (req, res) => {
     if(department.logo)
       await fs.unlink(`content/departments/${department.logo}`);
     await Department.findByIdAndDelete(req.body.id);
+
+    await Employee.deleteMany({ departmentId: req.body.id });
+    await Rating.deleteMany({ departmentId: req.body.id });
+    await fs.rmdir(`content/${req.body.id}`, { recursive: true });
+
 
     res.json({ success: true });
   } catch (error) {
